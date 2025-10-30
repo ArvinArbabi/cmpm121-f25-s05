@@ -1,54 +1,57 @@
-// CMPM 121 Smelly Code Activity
+const IDS = {
+  counter: "counter",
+  inc: "increment",
+  dec: "decrement",
+  reset: "reset",
+} as const;
 
-// This variable keeps track of the counter
-let c = 0;
+const COLORS = {
+  odd: "pink",
+  even: "lightblue",
+} as const;
 
-// These constants are for button IDs and heading text
-const a = "increment", b = "counter", h = "CMPM 121 Project";
+let count: number = 0;
 
-function setup() {
-  // Create the HTML for the counter
+function updateUI(): void {
+  const counterEl = document.getElementById(IDS.counter) as
+    | HTMLSpanElement
+    | null;
+  if (!counterEl) return;
+
+  counterEl.textContent = String(count);
+  document.title = `Clicked ${count}`;
+  document.body.style.backgroundColor = Math.abs(count) % 2
+    ? COLORS.odd
+    : COLORS.even;
+}
+
+function handleClick(delta: number): void {
+  count += delta;
+  updateUI();
+}
+
+function handleReset(): void {
+  count = 0;
+  updateUI();
+}
+
+function setup(): void {
   document.body.innerHTML = `
-    <h1>${h}</h1>
-    <p>Counter: <span id="${b}">0</span></p>
-    <button id="${a}">Click Me!</button>
-    <button id="dec">Decrement</button>
-    <button id="reset">Reset</button>
+    <h1>CMPM 121 Project</h1>
+    <p>Counter: <span id="${IDS.counter}">0</span></p>
+    <button id="${IDS.inc}">Increment</button>
+    <button id="${IDS.dec}">Decrement</button>
+    <button id="${IDS.reset}">Reset</button>
   `;
 
-  const bI = document.getElementById(a);
-  const bD = document.getElementById("dec");
-  const bR = document.getElementById("reset");
-  const ctr = document.getElementById(b);
+  (document.getElementById(IDS.inc) as HTMLButtonElement | null)
+    ?.addEventListener("click", () => handleClick(1));
+  (document.getElementById(IDS.dec) as HTMLButtonElement | null)
+    ?.addEventListener("click", () => handleClick(-1));
+  (document.getElementById(IDS.reset) as HTMLButtonElement | null)
+    ?.addEventListener("click", handleReset);
 
-  // Check if any element is missing, then exit the function
-  if (!bI || !bD || !bR || !ctr) return;
-
-  // Add click event to the increment button & change background on each click
-  bI.addEventListener("click", () => {
-    c++;
-    ctr.innerHTML = `${c}`;
-    document.title = "Clicked " + c;
-    document.body.style.backgroundColor = c % 2 ? "pink" : "lightblue";
-  });
-
-  // Add click event to the decrement button & change background on each click
-  bD.addEventListener("click", () => {
-    c--;
-    ctr.innerHTML = `${c}`;
-    document.body.style.backgroundColor = c % 2 ? "pink" : "lightblue";
-  });
-
-  // Add click event to the reset button
-  bR.addEventListener("click", () => {
-    c = 0;
-    ctr.innerHTML = `${c}`;
-    document.title = "Clicked " + c;
-  });
-}
-// Call setup to initialize the UI
-function start() {
-  setup();
+  updateUI();
 }
 
-start();
+setup();
